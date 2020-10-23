@@ -18,7 +18,7 @@ is_running=true
 
 
 function display_cronetab_jobs () {
-    echo "Displaying all jobs"
+    echo "Displaying all jobs..."
     crontab -l
 }
 
@@ -39,7 +39,7 @@ function remove_a_job () {
 
 
 function remove_all_jobs () {
-    echo "Remove all jobs"
+    echo "Removing all jobs..."
     crontab -r
 }
 
