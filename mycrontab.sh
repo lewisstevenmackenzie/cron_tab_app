@@ -19,33 +19,55 @@ is_running=true
 
 function display_cronetab_jobs () {
     echo "Displaying all jobs..."
+    # This command lists all the records
     crontab -l
+
 }
 
-#TODO
 function insert_a_job () {
-    echo "Insert a job"
+    echo "Type or paste your job in the correct format"
+    # We read the job the user provides
+    read new_job
+
+    # We use a pipe to open the current list of jobs, we print it and add the new record
+    # Then we take all the printed text and then we add it to the crontab file
+    crontab -l | { cat; echo "$new_job"; } | crontab -
 }
 
-#TODO
 function edit_a_job () {
-    echo "Edit a job"
+    echo "Type or paste the job you want to update"
+    # We read the job the user wants to update
+    read job_to_update
+
+    echo "Type or paste the updated version of the job"
+    # We get the uploaded version
+    read updated_job
+
+    # We delete the job using the same pipe as we used in the remove_a_job function
+    crontab -l | grep -Fxv "$job_to_update" | crontab -
+    #We add the  updated job provided by the user
+    crontab -l | { cat; echo "$updated_job"; } | crontab -
 }
 
-#TODO
 function remove_a_job () {
-    echo "Remove a job"
+    echo "Type or paste the job you want to delete in the correct format"
+    read job_to_delete
+
+    # We list the jobs, use grep all but the job that should be deleted and write it back to the file
+    crontab -l | grep -Fxv "$job_to_delete" | crontab -
 }
 
 
 function remove_all_jobs () {
     echo "Removing all jobs..."
+    # This command removes all the records
     crontab -r
 }
 
-# Done (Albert, 23.10.)
+
 function exit_app () {
     echo "Exiting..."
+    #We change the flag so the program stops running
     is_running=false
 }
 
@@ -76,4 +98,5 @@ do
     esac
 
 done    
+
 
