@@ -16,7 +16,7 @@
 # Setting a flag which defines if the program runs or not
 is_running=true 
 
-#TODO
+
 function display_cronetab_jobs () {
     echo "Displaying all jobs"
     crontab -l
@@ -37,9 +37,10 @@ function remove_a_job () {
     echo "Remove a job"
 }
 
-#TODO
+
 function remove_all_jobs () {
     echo "Remove all jobs"
+    crontab -r
 }
 
 # Done (Albert, 23.10.)
@@ -52,7 +53,6 @@ function exit_app () {
 while $is_running
 do
     # Printing out the options menu
-
     echo "1 . Display crontab jobs"
     echo "2 . Insert a job"
     echo "3 . Edit a job"
