@@ -18,7 +18,8 @@ is_running=true
 
 #TODO
 function display_cronetab_jobs () {
-    echo "Display jobs"
+    echo "Displaying all jobs"
+    crontab -l
 }
 
 #TODO
@@ -50,29 +51,29 @@ function exit_app () {
 # If the flag is set to 'true' the loop runs asking for commands
 while $is_running
 do
-# Printing out the options menu
-cat << END_TEXT
-1 . Display crontab jobs
-2 . Insert a job
-3 . Edit a job
-4 . Remove a job
-5 . Remove all jobs
-9 . Exit 
-END_TEXT
+    # Printing out the options menu
 
-# Reading the user's input and storing it
-read choice
+    echo "1 . Display crontab jobs"
+    echo "2 . Insert a job"
+    echo "3 . Edit a job"
+    echo "4 . Remove a job"
+    echo "5 . Remove all jobs"
+    echo "9 . Exit" 
 
-# Invoking a function based on the provided user's choice
-case $choice in 
-1) display_cronetab_jobs;;
-2) insert_a_job;;
-3) edit_a_job;;
-4) remove_a_job;;
-5) remove_all_jobs;;
-9) exit_app;;
-*) echo "Invalid choice. Try again!";;
-esac
+
+    # Reading the user's input and storing it
+    read choice
+
+    # Invoking a function based on the provided user's choice
+    case $choice in 
+        1) display_cronetab_jobs;;
+        2) insert_a_job;;
+        3) edit_a_job;;
+        4) remove_a_job;;
+        5) remove_all_jobs;;
+        9) exit_app;;
+        *) echo "Invalid choice. Try again!";;
+    esac
 
 done    
 
