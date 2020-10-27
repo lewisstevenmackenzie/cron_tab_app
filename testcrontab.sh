@@ -62,7 +62,6 @@ function insert_a_job () {
     echo "5. Multiple specific hour(s)"
     echo "Enter option (1-5)"
 
-
     read choice
 
     case $choice in 
@@ -151,7 +150,6 @@ function insert_a_job () {
     #install new cron file
     crontab mycron  
     rm mycron
-
  }
 
 #TODO
@@ -179,7 +177,6 @@ function remove_a_job () {
     echo "Remove a job"
 }
 
-
 function remove_all_jobs () {
     echo "Remove all jobs"
     crontab -r
@@ -202,7 +199,6 @@ do
     echo "5 . Remove all jobs"
     echo "9 . Exit" 
 
-
     # Reading the user's input and storing it
     read choice
 
@@ -216,6 +212,4 @@ do
         9) exit_app;;
         *) echo "Invalid choice. Try again!";;
     esac
-
 done    
-
