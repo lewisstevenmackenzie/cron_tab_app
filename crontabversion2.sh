@@ -15,6 +15,7 @@
 
 # Setting a flag which defines if the program runs or not
 is_running=true 
+
 function choose_minute (){
     # Choose minutes
     echo "1. Single specific minute"
@@ -55,7 +56,6 @@ function choose_hour (){
     echo "5. Multiple specific hour(s)"
     echo "Enter option (1-5)"
 
-
     read choice
 
     case $choice in 
@@ -79,7 +79,7 @@ function choose_hour (){
 
 function choose_day (){
 
-# Choose days
+    # Choose days
     echo "1. Single specific day"
     echo "2. Every day (*)"
     echo "3. Every x days"
@@ -110,7 +110,7 @@ function choose_day (){
 
 function choose_month (){
 
- # Choose months
+    # Choose months
     echo "1. Single specific month"
     echo "2. Every month (*)"
     echo "3. Every x month(s)"
@@ -142,7 +142,19 @@ function choose_month (){
 
 function display_cronetab_jobs () {
     echo "Displaying all jobs"
-    crontab -l
+    crontab -l > mycron
+    declare -a array
+    while read -r line;
+    do
+        array+=("$(echo "$line")")
+    done<mycron
+
+    for i in "${array[@]}"
+        do
+            echo "$i"
+        done
+
+
 }
 
 #TODO
@@ -157,8 +169,7 @@ function insert_a_job () {
 
     choose_month month
 
-
-    # Command
+    # Command to be executed
     echo "Enter a command:"
 
     read input
@@ -179,25 +190,58 @@ function edit_a_job () {
 
     # Printing out the options menu
     echo "Which job would you like to edit?"
-    echo "list of jobs"
+    
+    crontab -l > mycron
+    declare -a array
+
+    while read -r line;
+    do
+        array+=("$(echo "$line")")
+    done<mycron
+    count=1
+
+    for i in "${array[@]}"
+        do
+            echo "$count. $i"
+            ((count=count+1))
+        done
+
     echo "Enter job (1-x)"
 
     # Reading the user's input and storing it
     read choice
 
-    # Invoking a function based on the provided user's choice
-    case $choice in 
-        1) display_cronetab_jobs;;
+    IFS=' ' read -ra jobarray <<< "${array[$choice]}"
 
-        *) echo "Invalid choice. Try again!";;
+    #Edit job number from array
+    echo "What would you like to edit?"
+    echo "1. Minute"
+    echo "2. Hour"
+    echo "3. Day"
+    echo "4. Month"
+    echo "5. Later Problem"
+    echo "Enter option (1-5)"
+
+    read decision
+
+    case $decision in 
+    
+        1) choose_minute jobarray[$decision];;
+        2) ;;
+        3) ;;
+        4) ;;
+        5) #FUCK OFFFFFFF
+            ;;
+        *) echo "invalid choice. Try Again!";;
     esac
+
+    
 }
 
 #TODO
 function remove_a_job () {
     echo "Remove a job"
 }
-
 
 function remove_all_jobs () {
     echo "Remove all jobs"
