@@ -40,8 +40,29 @@ function choose_minute (){
             echo "enter y"
             read y
             minute=$x-$y;;
-        5) #FUCK OFFFFFFF
-            ;;
+       
+        5)  pass=true
+            array_of_times=()
+            while $pass
+            do
+                echo "enter a value">&2
+                read value
+
+                echo "Enter another value? (y/n)"
+                read response
+
+                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                    echo "can't duplicate value">&2
+                else
+                array_of_times+=("$value")
+                fi
+
+                if [[ $response == "n" ]]; then
+                pass=false
+                fi
+            done
+            minute=$( IFS=$',';echo "${array_of_times[*]}" );;
+    
         *) echo "invalid choice. Try Again!";;
     esac
 
@@ -72,8 +93,27 @@ function choose_hour (){
             echo "enter y"
             read y
             hour=$x-$y;;
-        5) #FUCK OFFFFFFF
-            ;;
+        5) pass=true
+            array_of_times=()
+            while $pass
+            do
+                echo "enter a value">&2
+                read value
+
+                echo "Enter another value? (y/n)"
+                read response
+
+                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                    echo "can't duplicate value">&2
+                else
+                array_of_times+=("$value")
+                fi
+
+                if [[ $response == "n" ]]; then
+                pass=false
+                fi
+            done
+            hour=$( IFS=$',';echo "${array_of_times[*]}" );;
         *) echo "invalid choice. Try Again!";;
     esac
 }
@@ -103,8 +143,27 @@ function choose_day (){
             echo "enter y"
             read y
             day=$x-$y;;
-        5) #FUCK OFFFFFFF
-            ;;
+        5) pass=true
+            array_of_times=()
+            while $pass
+            do
+                echo "enter a value">&2
+                read value
+
+                echo "Enter another value? (y/n)"
+                read response
+
+                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                    echo "can't duplicate value">&2
+                else
+                array_of_times+=("$value")
+                fi
+
+                if [[ $response == "n" ]]; then
+                pass=false
+                fi
+            done
+            day=$( IFS=$',';echo "${array_of_times[*]}" );;
         *) echo "invalid choice. Try Again!";;
     esac
 }
@@ -134,8 +193,27 @@ function choose_month (){
             echo "enter y"
             read y
             month=$x-$y;;
-        5) #FUCK OFFFFFFF
-            ;;
+        5) pass=true
+            array_of_times=()
+            while $pass
+            do
+                echo "enter a value">&2
+                read value
+
+                echo "Enter another value? (y/n)"
+                read response
+
+                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                    echo "can't duplicate value">&2
+                else
+                array_of_times+=("$value")
+                fi
+
+                if [[ $response == "n" ]]; then
+                pass=false
+                fi
+            done
+            month=$( IFS=$',';echo "${array_of_times[*]}" );;
         *) echo "invalid choice. Try Again!";;
     esac
 
@@ -165,8 +243,27 @@ function choose_day_of_the_week (){
             echo "enter y"
             read y
             day_of_week=$x-$y;;
-        5) #FUCK OFFFFFFF
-            ;;
+        5) pass=true
+            array_of_times=()
+            while $pass
+            do
+                echo "enter a value">&2
+                read value
+
+                echo "Enter another value? (y/n)"
+                read response
+
+                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                    echo "can't duplicate value">&2
+                else
+                array_of_times+=("$value")
+                fi
+
+                if [[ $response == "n" ]]; then
+                pass=false
+                fi
+            done
+            day_of_week=$( IFS=$',';echo "${array_of_times[*]}" );;
         *) echo "invalid choice. Try Again!";;
     esac   
 }
@@ -216,8 +313,7 @@ function insert_a_job () {
  }
 
 function edit_a_job () {
-    echo "Edit a job"
-
+  
     # Printing out the options menu
     echo "Which job would you like to edit?"
     
@@ -242,8 +338,6 @@ function edit_a_job () {
     read choice
     ((choice=choice-1))
     
-    echo  "This the second: ${array[$choice]}"
-
     IFS=' ' read -ra jobarray <<< "${array[$choice]}"
 
     for target in "${array[$choice]}"; do
@@ -286,7 +380,6 @@ function edit_a_job () {
 
     array+=("${jobarray[0]} ${jobarray[1]} ${jobarray[2]} ${jobarray[3]} ${jobarray[4]} ${jobarray[5]}")
 
-    echo "Error checker"
     rm mycron
 
     count=1
