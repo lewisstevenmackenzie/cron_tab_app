@@ -44,6 +44,7 @@ function choose_minute (){
             ;;
         *) echo "invalid choice. Try Again!";;
     esac
+
 }
 
 function choose_hour (){
@@ -140,6 +141,36 @@ function choose_month (){
 
 }
 
+function choose_day_of_the_week (){
+    # Choose day of the week
+    echo "1. Single specific day of the week"
+    echo "2. Every day of the week (*)"
+    echo "3. Every x days of the week"
+    echo "4. Between x and y days  of the week"
+    echo "5. Multiple specific day(s) of the week"
+    echo "Enter option (1-5)"
+
+    read choice
+
+    case $choice in 
+    
+        1) echo "enter a day" 
+            read day_of_week;;
+        2) day_of_week=*;;
+        3) echo "Enter the frequency"
+            read day_of_week
+            day_of_week=*/$day_of_week;;
+        4) echo "enter x"
+            read x
+            echo "enter y"
+            read y
+            day_of_week=$x-$y;;
+        5) #FUCK OFFFFFFF
+            ;;
+        *) echo "invalid choice. Try Again!";;
+    esac   
+}
+
 function display_cronetab_jobs () {
     echo "Displaying all jobs"
     crontab -l > mycron
@@ -153,21 +184,22 @@ function display_cronetab_jobs () {
         do
             echo "$i"
         done
-
+    rm mycron
 
 }
 
-#TODO
 function insert_a_job () {
     echo "Insert a job"
 
-    choose_minute minute
+    choose_minute
 
-    choose_hour hour
+    choose_hour
 
-    choose_day day
+    choose_day
 
-    choose_month month
+    choose_month
+
+    choose_day_of_the_week
 
     # Command to be executed
     echo "Enter a command:"
@@ -177,14 +209,12 @@ function insert_a_job () {
     #write out current crontab
     crontab -l > mycron
     #echo new cron into cron file
-    echo "$minute $hour $day $month * $input" >> mycron
+    echo "$minute $hour $day $month $day_of_week $input" >> mycron
     #install new cron file
     crontab mycron  
     rm mycron
-
  }
 
-#TODO
 function edit_a_job () {
     echo "Edit a job"
 
@@ -210,8 +240,19 @@ function edit_a_job () {
 
     # Reading the user's input and storing it
     read choice
+    ((choice=choice-1))
+    
+    echo  "This the second: ${array[$choice]}"
 
     IFS=' ' read -ra jobarray <<< "${array[$choice]}"
+
+    for target in "${array[$choice]}"; do
+        for i in "${!array[@]}"; do
+            if [[ ${array[i]} = $target ]]; then
+                unset 'array[i]'
+            fi
+        done
+    done
 
     #Edit job number from array
     echo "What would you like to edit?"
@@ -219,28 +260,84 @@ function edit_a_job () {
     echo "2. Hour"
     echo "3. Day"
     echo "4. Month"
-    echo "5. Later Problem"
+    echo "5. Day of the week"
     echo "Enter option (1-5)"
 
     read decision
+    ((edit=decision-1))
+
+    unset jobarray[$edit]
 
     case $decision in 
     
-        1) choose_minute jobarray[$decision];;
-        2) ;;
-        3) ;;
-        4) ;;
-        5) #FUCK OFFFFFFF
-            ;;
+        1) choose_minute 
+            jobarray[0]=$minute;;
+        2) choose_hour 
+            jobarray[1]=$hour;;
+        3) choose_day 
+            jobarray[2]=$day;;
+        4) choose_month 
+            jobarray[3]=$month;;
+        5) choose_day_of_the_week
+            jobarray[4]=$day_of_week;;
         *) echo "invalid choice. Try Again!";;
-    esac
 
-    
+    esac  
+
+    array+=("${jobarray[0]} ${jobarray[1]} ${jobarray[2]} ${jobarray[3]} ${jobarray[4]} ${jobarray[5]}")
+
+    echo "Error checker"
+    rm mycron
+
+    count=1
+    for i in "${array[@]}"
+        do
+            echo "$count. $i"
+            ((count=count+1))
+        done
+
+    printf "%s\n" "${array[@]}" > mycron
+    crontab mycron
+    rm mycron
 }
 
 #TODO
 function remove_a_job () {
     echo "Remove a job"
+
+    crontab -l > mycron
+    declare -a array
+
+    while read -r line;
+    do
+        array+=("$(echo "$line")")
+    done<mycron
+    count=1
+
+    for i in "${array[@]}"
+        do
+            echo "$count. $i"
+            ((count=count+1))
+        done
+
+    echo "Enter job (1-x)"
+
+    # Reading the user's input and storing it
+    read choice
+    ((choice=choice-1))
+
+    for target in "${array[$choice]}"; do
+        for i in "${!array[@]}"; do
+            if [[ ${array[i]} = $target ]]; then
+                unset 'array[i]'
+            fi
+        done
+    done
+
+    rm mycron
+    printf "%s\n" "${array[@]}" > mycron
+    crontab mycron
+    rm mycron
 }
 
 function remove_all_jobs () {
