@@ -22,7 +22,7 @@ function getMinute (){
     do
 		local minute
         read minute
-        if (( $minute >= 0 )) && (( $minute <= 59 ))
+        if (( $minute >= 0 )) && (( $minute <= 59 )) && [[ "$minute" =~ [0-9]+$ ]];
         then
             validation_running=false
         else 
@@ -38,7 +38,7 @@ function getHour (){
     while $validation_running
     do
         read hour
-        if (( $hour >= 0 )) && (( $hour <= 23 ))
+        if (( $hour >= 0 )) && (( $hour <= 23 )) && [[ "$hour" =~ [0-9]+$ ]];
         then
             validation_running=false
         else 
@@ -55,7 +55,7 @@ function getDay (){
     while $validation_running
     do
         read day
-        if (( $day >= 1 )) && (( $day <= 31	 ))
+        if (( $day >= 1 )) && (( $day <= 31	 )) && [[ "$day" =~ [0-9]+$ ]];
         then
             validation_running=false
         else 
@@ -68,15 +68,15 @@ function getDay (){
 
 function getMonth (){
 
-	monthlist=("Jan" "Feb" "Mar" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")
+	month_list=("Jan" "Feb" "Mar" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")
     validation_running=true
     while $validation_running
     do
         read month
-        if [[ "${array[@]}" =~ "${monthlist}" ]]
+        if [[ "${month_list[@]}" =~ "${month}" ]];
         then
             validation_running=false
-		elif (( $month >= 1 )) && (( $month <= 12 )); then
+		elif (( $month >= 1 )) && (( $month <= 12 )) && [[ "$month" =~ [0-9]+$ ]]; then
 			validation_running=false
         else 
             echo "Enter a valid number within the range 1-12 OR Jan-Dec">&2
@@ -88,22 +88,22 @@ function getMonth (){
 
 function getDayOfWeek (){
 
-	daylist=("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun")
+	day_list=("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun")
     validation_running=true
     while $validation_running
     do
-        read dayofweek
-        if [[ "${array[@]}" =~ "${dayofweek}" ]];
+        read day_of_week
+        if [[ "${day_list[@]}" =~ "${day_of_week}" ]];
         then
             validation_running=false
-		elif (( $dayofweek >= 0 )) && (( $dayofweek <= 6 )); then
+		elif (( $day_of_week >= 0 )) && (( $day_of_week <= 6 )) && [[ "$day_of_week" =~ [0-9]+$ ]]; then
 			validation_running=false
         else 
             echo "Enter a valid number within the range 0-6 OR Sun-Mon">&2
         fi
     done
 
-    echo $dayofweek
+    echo $day_of_week
 }
 
 function choose_minute (){
@@ -114,46 +114,52 @@ function choose_minute (){
     echo "4. Between x and y minutes"
     echo "5. Multiple specific minute(s)"
     echo "Enter option (1-5)"
-    minute=5
-    read choice
-    
-    case $choice in 
-    
-        1) echo "enter a minute" 
-            minute=$(getMinute);;
-        2) minute=*;;
-        3) echo "Enter the frequency"
-            minute=$(getMinute)
-            minute=*/$minute;;
-        4) echo "enter x"
-            x=$(getMinute)
-            echo "enter y"
-            y=$(getMinute)
-            minute=$x-$y;;
-        5)  pass=true
-            array_of_times=()
-            while $pass
-            do
-                echo "enter a value">&2
-                value=$(getMinute)
 
-                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                    echo "can't duplicate value">&2
-                else
-                array_of_times+=("$value")
-                fi
-                
-                echo "Enter another value? (y/n)"
-                read response
+    validation=true
+    while $validation;
+    do
+        validation=false
+        read choice
+        
+        case $choice in 
+        
+            1) echo "enter a minute" 
+                minute=$(getMinute);;
+            2) minute=*;;
+            3) echo "Enter the frequency"
+                minute=$(getMinute)
+                minute=*/$minute;;
+            4) echo "enter x"
+                x=$(getMinute)
+                echo "enter y"
+                y=$(getMinute)
+                minute=$x-$y;;
+            5)  pass=true
+                array_of_times=()
+                while $pass
+                do
+                    echo "enter a value">&2
+                    value=$(getMinute)
 
-                if [[ $response == "n" ]]; then
-                pass=false
-                fi
-            done
-            minute=$( IFS=$',';echo "${array_of_times[*]}" );;
-    
-        *) echo "invalid choice. Try Again!";;
-    esac
+                    if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                        echo "can't duplicate value">&2
+                    else
+                    array_of_times+=("$value")
+                    fi
+                    
+                    echo "Enter another value? (y/n)"
+                    read response
+
+                    if [[ $response == "n" ]]; then
+                    pass=false
+                    fi
+                done
+                minute=$( IFS=$',';echo "${array_of_times[*]}" );;
+        
+            *) echo "invalid choice. Try Again!"
+                validation=true;;
+        esac
+    done
 }
 
 function choose_hour (){
@@ -164,45 +170,50 @@ function choose_hour (){
     echo "4. Between x and y hours"
     echo "5. Multiple specific hour(s)"
     echo "Enter option (1-5)"
+        validation=true
+    while $validation;
+    do
+        validation=false
+        read choice
 
-    read choice
+        case $choice in 
+        
+            1) echo "enter a hour" 
+                hour=$(getHour);;
+            2) hour=*;;
+            3) echo "Enter the frequency"
+                hour=$(getHour)
+                hour=*/$hour;;
+            4) echo "enter x"
+                x=$(getHour)
+                echo "enter y"
+                y=$(getHour)
+                hour=$x-$y;;
+            5) pass=true
+                array_of_times=()
+                while $pass
+                do
+                    echo "enter a value">&2
+                    value=$(getHour)
 
-    case $choice in 
-    
-        1) echo "enter a hour" 
-            hour=$(getHour);;
-        2) hour=*;;
-        3) echo "Enter the frequency"
-            hour=$(getHour)
-            hour=*/$hour;;
-        4) echo "enter x"
-            x=$(getHour)
-            echo "enter y"
-            y=$(getHour)
-            hour=$x-$y;;
-        5) pass=true
-            array_of_times=()
-            while $pass
-            do
-                echo "enter a value">&2
-                value=$(getHour)
+                    if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                        echo "can't duplicate value">&2
+                    else
+                    array_of_times+=("$value")
+                    fi
 
-                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                    echo "can't duplicate value">&2
-                else
-                array_of_times+=("$value")
-                fi
+                    echo "Enter another value? (y/n)"
+                    read response
 
-                echo "Enter another value? (y/n)"
-                read response
-
-                if [[ $response == "n" ]]; then
-                pass=false
-                fi
-            done
-            hour=$( IFS=$',';echo "${array_of_times[*]}" );;
-        *) echo "invalid choice. Try Again!";;
-    esac
+                    if [[ $response == "n" ]]; then
+                    pass=false
+                    fi
+                done
+                hour=$( IFS=$',';echo "${array_of_times[*]}" );;
+            *) echo "invalid choice. Try Again!"
+                validation=true;;
+        esac
+    done
 }
 
 function choose_day (){
@@ -214,44 +225,50 @@ function choose_day (){
     echo "5. Multiple specific day(s)"
     echo "Enter option (1-5)"
 
-    read choice
+    validation=true
+    while $validation;
+    do
+        validation=false
+        read choice
 
-    case $choice in 
-    
-        1) echo "enter a day" 
-            day=$(getDay);;
-        2) day=*;;
-        3) echo "Enter the frequency"
-            day=$(getDay)
-            day=*/$day;;
-        4) echo "enter x"
-            x=$(getDay)
-            echo "enter y"
-            y=$(getDay)
-            day=$x-$y;;
-        5) pass=true
-            array_of_times=()
-            while $pass
-            do
-                echo "enter a value">&2
-                value=$(getDay)
+        case $choice in 
+        
+            1) echo "enter a day" 
+                day=$(getDay);;
+            2) day=*;;
+            3) echo "Enter the frequency"
+                day=$(getDay)
+                day=*/$day;;
+            4) echo "enter x"
+                x=$(getDay)
+                echo "enter y"
+                y=$(getDay)
+                day=$x-$y;;
+            5) pass=true
+                array_of_times=()
+                while $pass
+                do
+                    echo "enter a value">&2
+                    value=$(getDay)
 
-                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                    echo "can't duplicate value">&2
-                else
-                array_of_times+=("$value")
-                fi
+                    if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                        echo "can't duplicate value">&2
+                    else
+                    array_of_times+=("$value")
+                    fi
 
-                echo "Enter another value? (y/n)"
-                read response
+                    echo "Enter another value? (y/n)"
+                    read response
 
-                if [[ $response == "n" ]]; then
-                pass=false
-                fi
-            done
-            day=$( IFS=$',';echo "${array_of_times[*]}" );;
-        *) echo "invalid choice. Try Again!";;
-    esac
+                    if [[ $response == "n" ]]; then
+                    pass=false
+                    fi
+                done
+                day=$( IFS=$',';echo "${array_of_times[*]}" );;
+            *) echo "invalid choice. Try Again!"
+            validation=true;;
+        esac
+    done
 }
 
 function choose_month (){
@@ -263,44 +280,50 @@ function choose_month (){
     echo "5. Multiple specific month(s)"
     echo "Enter option (1-5)"
 
-    read choice
+    validation=true
+    while $validation;
+    do
+        validation=false
+        read choice
 
-    case $choice in 
-    
-        1) echo "enter a month" 
-            month=$(getMonth);;
-        2) month=*;;
-        3) echo "Enter the frequency"
-            month=$(getMonth)
-            month=*/$minute;;
-        4) echo "enter x"
-            x=$(getMonth)
-            echo "enter y"
-            y=$(getMonth)
-            month=$x-$y;;
-        5) pass=true
-            array_of_times=()
-            while $pass
-            do
-                echo "enter a value">&2
-                value=$(getMonth)
+        case $choice in 
+        
+            1) echo "enter a month" 
+                month=$(getMonth);;
+            2) month=*;;
+            3) echo "Enter the frequency"
+                month=$(getMonth)
+                month=*/$minute;;
+            4) echo "enter x"
+                x=$(getMonth)
+                echo "enter y"
+                y=$(getMonth)
+                month=$x-$y;;
+            5) pass=true
+                array_of_times=()
+                while $pass
+                do
+                    echo "enter a value">&2
+                    value=$(getMonth)
 
-                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                    echo "can't duplicate value">&2
-                else
-                array_of_times+=("$value")
-                fi
+                    if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                        echo "can't duplicate value">&2
+                    else
+                    array_of_times+=("$value")
+                    fi
 
-                echo "Enter another value? (y/n)"
-                read response
+                    echo "Enter another value? (y/n)"
+                    read response
 
-                if [[ $response == "n" ]]; then
-                pass=false
-                fi
-            done
-            month=$( IFS=$',';echo "${array_of_times[*]}" );;
-        *) echo "invalid choice. Try Again!";;
-    esac
+                    if [[ $response == "n" ]]; then
+                    pass=false
+                    fi
+                done
+                month=$( IFS=$',';echo "${array_of_times[*]}" );;
+            *) echo "invalid choice. Try Again!"
+                validation=true;;
+        esac
+    done
 }
 
 function choose_day_of_the_week (){
@@ -312,44 +335,50 @@ function choose_day_of_the_week (){
     echo "5. Multiple specific day(s) of the week"
     echo "Enter option (1-5)"
 
-    read choice
+    validation=true
+    while $validation;
+    do
+        validation=false
+        read choice
 
-    case $choice in 
-    
-        1) echo "enter a day" 
-            day_of_week=$(getDayOfWeek);;
-        2) day_of_week=*;;
-        3) echo "Enter the frequency"
-            day_of_week=$(getDayOfWeek)
-            day_of_week=*/$day_of_week;;
-        4) echo "enter x"
-            x=$(getDayOfWeek)
-            echo "enter y"
-            y=$(getDayOfWeek)
-            day_of_week=$x-$y;;
-        5) pass=true
-            array_of_times=()
-            while $pass
-            do
-                echo "enter a value">&2
-                value=$(getDayOfWeek)
+        case $choice in 
+        
+            1) echo "enter a day" 
+                day_of_week=$(getDayOfWeek);;
+            2) day_of_week=*;;
+            3) echo "Enter the frequency"
+                day_of_week=$(getDayOfWeek)
+                day_of_week=*/$day_of_week;;
+            4) echo "enter x"
+                x=$(getDayOfWeek)
+                echo "enter y"
+                y=$(getDayOfWeek)
+                day_of_week=$x-$y;;
+            5) pass=true
+                array_of_times=()
+                while $pass
+                do
+                    echo "enter a value">&2
+                    value=$(getDayOfWeek)
 
-                if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                    echo "can't duplicate value">&2
-                else
-                array_of_times+=("$value")
-                fi
+                    if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                        echo "can't duplicate value">&2
+                    else
+                    array_of_times+=("$value")
+                    fi
 
-                echo "Enter another value? (y/n)"
-                read response
+                    echo "Enter another value? (y/n)"
+                    read response
 
-                if [[ $response == "n" ]]; then
-                pass=false
-                fi
-            done
-            day_of_week=$( IFS=$',';echo "${array_of_times[*]}" );;
-        *) echo "invalid choice. Try Again!";;
-    esac   
+                    if [[ $response == "n" ]]; then
+                    pass=false
+                    fi
+                done
+                day_of_week=$( IFS=$',';echo "${array_of_times[*]}" );;
+            *) echo "invalid choice. Try Again!"
+                validation=true;;
+        esac 
+    done  
 }
 
 function display_cronetab_jobs () {
@@ -415,8 +444,8 @@ function edit_a_job () {
             ((count=count+1))
         done
 
-    validjobnum=true
-    while $validjobnum;
+    valid_job_number=true
+    while $valid_job_number;
     do
         echo "Enter job (1-x)"
 
@@ -426,7 +455,7 @@ function edit_a_job () {
         if (( $choice > ${#array[@]} )) || (( $choice < 1 )) ; then
             echo "enter a valid job"
         else
-            validjobnum=false
+            valid_job_number=false
         fi
     done
 
@@ -451,25 +480,31 @@ function edit_a_job () {
     echo "5. Day of the week"
     echo "Enter option (1-5)"
 
-    read decision
-    ((edit=decision-1))
+    validation=true
+    while $validation;
+    do
+        validation=false
+        read decision
+        ((edit=decision-1))
 
-    unset jobarray[$edit]
+        unset jobarray[$edit]
 
-    case $decision in 
-    
-        1) choose_minute 
-            jobarray[0]=$minute;;
-        2) choose_hour 
-            jobarray[1]=$hour;;
-        3) choose_day 
-            jobarray[2]=$day;;
-        4) choose_month 
-            jobarray[3]=$month;;
-        5) choose_day_of_the_week
-            jobarray[4]=$day_of_week;;
-        *) echo "invalid choice. Try Again!";;
-    esac  
+        case $decision in 
+        
+            1) choose_minute 
+                jobarray[0]=$minute;;
+            2) choose_hour 
+                jobarray[1]=$hour;;
+            3) choose_day 
+                jobarray[2]=$day;;
+            4) choose_month 
+                jobarray[3]=$month;;
+            5) choose_day_of_the_week
+                jobarray[4]=$day_of_week;;
+            *) echo "invalid choice. Try Again!"
+                validation=true;;
+        esac  
+    done
 
     array+=("${jobarray[0]} ${jobarray[1]} ${jobarray[2]} ${jobarray[3]} ${jobarray[4]} ${jobarray[5]}")
     rm mycron
