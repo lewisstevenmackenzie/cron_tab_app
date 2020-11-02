@@ -15,6 +15,29 @@
 
 # Setting a flag which defines if the program runs or not
 is_running=true 
+declare -a cronjobs_array
+
+function split_cronjobs_into_array () {
+    unset cronjobs_array
+
+    # Echo current crontab into temporary file
+    crontab -l > mycron
+
+    #  Fill array with cron jobs 
+    while read -r line;
+    do
+        cronjobs_array+=("$(echo "$line")")
+    done<mycron
+
+    # Display all cron jobs
+    count=1
+    for i in "${cronjobs_array[@]}"
+        do
+            echo "$count. $i">&2
+            ((count=count+1))
+        done
+    rm mycron
+}
 
 function getMinute (){
     validation_running=true
@@ -99,7 +122,7 @@ function getDayOfWeek (){
 }
 
 function choose_minute (){
-    # Choose minutes
+    # Choose minute type
     echo "1. Single specific minute"
     echo "2. Every minute (*)"
     echo "3. Every x minutes"
@@ -107,10 +130,11 @@ function choose_minute (){
     echo "5. Multiple specific minute(s)"
     echo "Enter option (1-5)"
 
-    validation=true
-    while $validation;
+    # Check if the user enters a valid choice 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read choice
         
         case $choice in 
@@ -138,33 +162,34 @@ function choose_minute (){
                         array_of_times+=("$value")
                     fi
                     
-                    echo "Enter another value? (y/n)"
+                    echo "Enter 'yes' to input another value: (anything else will exit)"
                     read response
 
-                    if [[ $response == "n" ]]; then
+                    if [[ $response != "yes" ]]; then
                         pass=false
                     fi
                 done
                 minute=$( IFS=$',';echo "${array_of_times[*]}" );;
         
             *) echo "invalid choice. Try Again!"
-                validation=true;;
+                validation=false;;
         esac
     done
 }
 
 function choose_hour (){
-    # Choose hours
+    # Choose hour type
     echo "1. Single specific hour"
     echo "2. Every hour (*)"
     echo "3. Every x hours"
     echo "4. Between x and y hours"
     echo "5. Multiple specific hour(s)"
     echo "Enter option (1-5)"
-        validation=true
-    while $validation;
+    # Run validation to ensure the user enters 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read choice
 
         case $choice in 
@@ -192,33 +217,33 @@ function choose_hour (){
                         array_of_times+=("$value")
                     fi
 
-                    echo "Enter another value? (y/n)"
+                    echo "Enter 'yes' to input another value: (anything else will exit)"
                     read response
 
-                    if [[ $response == "n" ]]; then
+                    if [[ $response != "yes" ]]; then
                         pass=false
                     fi
                 done
                 hour=$( IFS=$',';echo "${array_of_times[*]}" );;
             *) echo "invalid choice. Try Again!"
-                validation=true;;
+                validation=false;;
         esac
     done
 }
 
 function choose_day (){
-    # Choose days
+    # Choose day type
     echo "1. Single specific day"
     echo "2. Every day (*)"
     echo "3. Every x days"
     echo "4. Between x and y days"
     echo "5. Multiple specific day(s)"
     echo "Enter option (1-5)"
-
-    validation=true
-    while $validation;
+    # Run validation to ensure user enters 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read choice
 
         case $choice in 
@@ -246,33 +271,33 @@ function choose_day (){
                         array_of_times+=("$value")
                     fi
 
-                    echo "Enter another value? (y/n)"
+                    echo "Enter 'yes' to input another value: (anything else will exit)"
                     read response
 
-                    if [[ $response == "n" ]]; then
+                    if [[ $response != "yes" ]]; then
                         pass=false
                     fi
                 done
                 day=$( IFS=$',';echo "${array_of_times[*]}" );;
             *) echo "invalid choice. Try Again!"
-            validation=true;;
+                validation=false;;
         esac
     done
 }
 
 function choose_month (){
-    # Choose months
+    # Choose month type
     echo "1. Single specific month"
     echo "2. Every month (*)"
     echo "3. Every x month(s)"
     echo "4. Between x and y months"
     echo "5. Multiple specific month(s)"
     echo "Enter option (1-5)"
-
-    validation=true
-    while $validation;
+    # Run validation to ensure user enter 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read choice
 
         case $choice in 
@@ -300,22 +325,22 @@ function choose_month (){
                         array_of_times+=("$value")
                     fi
 
-                    echo "Enter another value? (y/n)"
+                    echo "Enter 'yes' to input another value: (anything else will exit)"
                     read response
 
-                    if [[ $response == "n" ]]; then
+                    if [[ $response != "yes" ]]; then
                         pass=false
                     fi
                 done
                 month=$( IFS=$',';echo "${array_of_times[*]}" );;
             *) echo "invalid choice. Try Again!"
-                validation=true;;
+                validation=false;;
         esac
     done
 }
 
 function choose_day_of_the_week (){
-    # Choose day of the week
+    # Choose day of the week type 
     echo "1. Single specific day of the week"
     echo "2. Every day of the week (*)"
     echo "3. Every x days of the week"
@@ -323,10 +348,11 @@ function choose_day_of_the_week (){
     echo "5. Multiple specific day(s) of the week"
     echo "Enter option (1-5)"
 
-    validation=true
-    while $validation;
+    # Run validation to ensure user enter 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read choice
 
         case $choice in 
@@ -354,39 +380,30 @@ function choose_day_of_the_week (){
                         array_of_times+=("$value")
                     fi
 
-                    echo "Enter another value? (y/n)"
+                    echo "Enter 'yes' to input another value: (anything else will exit)"
                     read response
 
-                    if [[ $response == "n" ]]; then
+                    if [[ $response != "yes" ]]; then
                         pass=false
                     fi
                 done
                 day_of_week=$( IFS=$',';echo "${array_of_times[*]}" );;
             *) echo "invalid choice. Try Again!"
-                validation=true;;
+                validation=false;;
         esac 
     done  
 }
 
-function display_cronetab_jobs () {
+function display_crontab_jobs () {
     echo "Displaying all jobs"
-    crontab -l > mycron
-    declare -a cronjobs_array
-    while read -r line;
-    do
-        cronjobs_array+=("$(echo "$line")")
-    done<mycron
-
-    for i in "${cronjobs_array[@]}"
-        do
-            echo "$i"
-        done
-    rm mycron
+    
+    split_cronjobs_into_array   
 }
 
 function insert_a_job () {
     echo "Insert a job"
 
+    # Run various function to return the periodicity
     choose_minute
 
     choose_hour
@@ -400,12 +417,11 @@ function insert_a_job () {
     # Command to be executed
     echo "Enter a command:"
 
-    read input
+    read job_command
 
-    #write out current crontab
     crontab -l > mycron
-    #echo new cron into cron file
-    echo "$minute $hour $day $month $day_of_week $input" >> mycron
+    # Echo new cron into cron file
+    echo "$minute $hour $day $month $day_of_week $job_command" >> mycron
     #install new cron file
     crontab mycron  
     rm mycron
@@ -413,43 +429,30 @@ function insert_a_job () {
 
 function edit_a_job () {
   
-    # Printing out the options menu
     echo "Which job would you like to edit?"
     
-    crontab -l > mycron
-    declare -a cronjobs_array
+    split_cronjobs_into_array   
 
-    while read -r line;
+    # Run validation to ensure the user enter a valid job to edit
+    valid_job_number=false
+    while ! $valid_job_number;
     do
-        cronjobs_array+=("$(echo "$line")")
-    done<mycron
-    count=1
+        echo "Enter job number (1-x)"
 
-    for i in "${cronjobs_array[@]}"
-        do
-            echo "$count. $i"
-            ((count=count+1))
-        done
-
-    valid_job_number=true
-    while $valid_job_number;
-    do
-        echo "Enter job (1-x)"
-
-        # Reading the user's input and storing it
+        # Choose a job to edit and check if it's valid
         read choice
 
         if (( $choice > ${#cronjobs_array[@]} )) || (( $choice < 1 )) ; then
             echo "enter a valid job"
         else
-            valid_job_number=false
+            valid_job_number=true
         fi
     done
 
+    # Store the job to edit into a new array
     ((choice=choice-1))
-    
     IFS=' ' read -ra cronjob_to_edit <<< "${cronjobs_array[$choice]}"
-
+    # Remove job from array of all jobs 
     for target in "${cronjobs_array[$choice]}"; do
         for i in "${!cronjobs_array[@]}"; do
             if [[ ${cronjobs_array[i]} = $target ]]; then
@@ -458,7 +461,7 @@ function edit_a_job () {
         done
     done
 
-    #Edit job number from cronjobs_array
+    # Chose what to edit in the job
     echo "What would you like to edit?"
     echo "1. Minute"
     echo "2. Hour"
@@ -466,11 +469,11 @@ function edit_a_job () {
     echo "4. Month"
     echo "5. Day of the week"
     echo "Enter option (1-5)"
-
-    validation=true
-    while $validation;
+    # Input validation: Ensure the user enter 1-5 otherwise loop
+    validation=false
+    while ! $validation;
     do
-        validation=false
+        validation=true
         read decision
         ((index=decision-1))
 
@@ -489,20 +492,14 @@ function edit_a_job () {
             5) choose_day_of_the_week
                 cronjob_to_edit[4]=$day_of_week;;
             *) echo "invalid choice. Try Again!"
-                validation=true;;
+                validation=false;;
         esac  
     done
 
+    # Store the edited cronjob back into the array of all jobs
     cronjobs_array+=("${cronjob_to_edit[0]} ${cronjob_to_edit[1]} ${cronjob_to_edit[2]} ${cronjob_to_edit[3]} ${cronjob_to_edit[4]} ${cronjob_to_edit[5]}")
-    rm mycron
-    count=1
 
-    for i in "${cronjobs_array[@]}"
-        do
-            echo "$count. $i"
-            ((count=count+1))
-        done
-
+    # Store edited jobs array into mycron then crontab
     printf "%s\n" "${cronjobs_array[@]}" > mycron
     crontab mycron
     rm mycron
@@ -511,24 +508,11 @@ function edit_a_job () {
 function remove_a_job () {
     echo "Remove a job"
 
-    crontab -l > mycron
-    declare -a cronjobs_array
-
-    while read -r line;
-    do
-        cronjobs_array+=("$(echo "$line")")
-    done<mycron
-    count=1
-
-    for i in "${cronjobs_array[@]}"
-        do
-            echo "$count. $i"
-            ((count=count+1))
-        done
+    split_cronjobs_into_array   
 
     echo "Enter job (1-x)"
 
-    # Reading the user's input and storing it
+    # Read the user's input and remove the indexed job from the array
     read choice
     ((choice=choice-1))
 
@@ -539,8 +523,7 @@ function remove_a_job () {
             fi
         done
     done
-
-    rm mycron
+    # Store cronjobs into temp file then crontab
     printf "%s\n" "${cronjobs_array[@]}" > mycron
     crontab mycron
     rm mycron
@@ -551,12 +534,12 @@ function remove_all_jobs () {
     crontab -r
 }
 
-# Done (Albert, 23.10.)
 function exit_app () {
     echo "Exiting..."
     is_running=false
 }
 
+# Program start point
 # If the flag is set to 'true' the loop runs asking for commands
 while $is_running
 do
@@ -573,7 +556,7 @@ do
 
     # Invoking a function based on the provided user's choice
     case $choice in 
-        1) display_cronetab_jobs;;
+        1) display_crontab_jobs;;
         2) insert_a_job;;
         3) edit_a_job;;
         4) remove_a_job;;
