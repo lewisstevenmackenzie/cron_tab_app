@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # CSN08116 Operating Systems - Coursework (mycrontab)
 # --------------------------------------------------
@@ -28,14 +28,6 @@ function split_cronjobs_into_array () {
     do
         cronjobs_array+=("$(echo "$line")")
     done<mycron
-
-    # Display all cron jobs
-    count=1
-    for i in "${cronjobs_array[@]}"
-        do
-            echo "$count. $i">&2
-            ((count=count+1))
-        done
     rm mycron
 }
 
@@ -397,7 +389,17 @@ function choose_day_of_the_week (){
 function display_crontab_jobs () {
     echo "Displaying all jobs"
     
-    split_cronjobs_into_array   
+    split_cronjobs_into_array 
+
+    # Display all cron jobs
+    count=1
+    echo -e "# \t Min \t Hour \t Day \t Month \t DoW \t Command"
+    for i in "${cronjobs_array[@]}"
+        do
+            IFS=' ' read -ra words <<< "$i"
+            echo -e "$count \t ${words[0]} \t ${words[1]} \t ${words[2]} \t ${words[3]} \t ${words[4]} \t ${words[5]} \t\t ${words[6]} "
+            ((count=count+1))
+        done  
 }
 
 function insert_a_job () {
