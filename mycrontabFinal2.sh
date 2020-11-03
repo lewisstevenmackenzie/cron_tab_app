@@ -11,7 +11,6 @@
 # * Lewis Mackenzie
 # * Ewan Robertson
 # --------------------------------------------------
-# License: MIT
 
 # Setting a flag which defines if the program runs or not
 is_running=true 
