@@ -312,14 +312,18 @@
 
     function display_crontab_jobs () {
         echo "Displaying all jobs"
-        
+
         split_cronjobs_into_array 
 
         # Display all cron jobs
         count=1
+        clear
+        echo -e "Key: \n* = every \n- = between \n, = specific \n/ = frequency \n"
         echo -e "# \t Min \t Hour \t Day \t Month \t DoW \t Command"
+        echo "------------------------------------------------------------"
         for i in "${cronjobs_array[@]}"
         do
+            i=${i//'*'/"every"}
             IFS=' ' read -ra words <<< "$i"
             echo -e "$count \t ${words[0]} \t ${words[1]} \t ${words[2]} \t ${words[3]} \t ${words[4]} \t ${words[5]} \t ${words[6]} "
             ((count=count+1))
@@ -357,7 +361,8 @@
     
         echo "Which job would you like to edit?"
         
-        split_cronjobs_into_array   
+        split_cronjobs_into_array 
+        display_crontab_jobs  
 
         # Run validation to ensure the user enter a valid job to edit
         valid_job_number=false
@@ -479,6 +484,7 @@
 
         # Reading the user's input and storing it
         read choice
+        echo ""
 
         # Invoking a function based on the provided user's choice
         case $choice in 
