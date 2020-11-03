@@ -318,7 +318,7 @@
         # Display all cron jobs
         count=1
         clear
-        echo -e "Key: \n* = every \n- = between \n, = specific \n/ = frequency \n"
+        echo -e "Key: \n- = between \n, = specific \n/ = frequency \n"
         echo -e "# \t Min \t Hour \t Day \t Month \t DoW \t Command"
         echo "------------------------------------------------------------"
         for i in "${cronjobs_array[@]}"
