@@ -112,6 +112,32 @@
         echo $day_of_week
     }
 
+    function multiple_selection (){
+        pass=true
+        array_of_times=()
+        while $pass
+        do
+            echo "enter a value">&2
+            value=$($1)
+
+            if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
+                echo "can't duplicate value">&2
+            else
+                array_of_times+=("$value")
+            fi
+
+            echo "Enter 'yes' to input another value: (anything else will exit)">&2
+            read response
+
+            if [[ $response != "yes" ]]; then
+                pass=false
+            fi
+        done
+        day=$( IFS=',';echo "${array_of_times[*]}" )
+        echo $day
+
+    }
+
     function choose_minute (){
         # Choose minute type
         echo "1. Single specific minute"
@@ -140,28 +166,7 @@
                     echo "enter y"
                     y=$(getMinute)
                     minute=$x-$y;;
-                5)  pass=true
-                    array_of_times=()
-                    while $pass
-                    do
-                        echo "enter a value"
-                        value=$(getMinute)
-
-                        if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                            echo "can't duplicate value"
-                        else
-                            array_of_times+=("$value")
-                        fi
-                        
-                        echo "Enter 'yes' to input another value: (anything else will exit)"
-                        read response
-
-                        if [[ $response != "yes" ]]; then
-                            pass=false
-                        fi
-                    done
-                    minute=$( IFS=',';echo "${array_of_times[*]}" );;
-            
+                5)  minute=$(multiple_selection getMinute);;            
                 *) echo "invalid choice. Try Again!"
                     validation=false;;
             esac
@@ -195,27 +200,7 @@
                     echo "enter y"
                     y=$(getHour)
                     hour=$x-$y;;
-                5) pass=true
-                    array_of_times=()
-                    while $pass
-                    do
-                        echo "enter a value"
-                        value=$(getHour)
-
-                        if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                            echo "can't duplicate value"
-                        else
-                            array_of_times+=("$value")
-                        fi
-
-                        echo "Enter 'yes' to input another value: (anything else will exit)"
-                        read response
-
-                        if [[ $response != "yes" ]]; then
-                            pass=false
-                        fi
-                    done
-                    hour=$( IFS=',';echo "${array_of_times[*]}" );;
+                5) hour=$(multiple_selection getHour);;
                 *) echo "invalid choice. Try Again!"
                     validation=false;;
             esac
@@ -249,27 +234,7 @@
                     echo "enter y"
                     y=$(getDay)
                     day=$x-$y;;
-                5) pass=true
-                    array_of_times=()
-                    while $pass
-                    do
-                        echo "enter a value"
-                        value=$(getDay)
-
-                        if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                            echo "can't duplicate value"
-                        else
-                            array_of_times+=("$value")
-                        fi
-
-                        echo "Enter 'yes' to input another value: (anything else will exit)"
-                        read response
-
-                        if [[ $response != "yes" ]]; then
-                            pass=false
-                        fi
-                    done
-                    day=$( IFS=',';echo "${array_of_times[*]}" );;
+                5) day=$(multiple_selection getDay);;
                 *) echo "invalid choice. Try Again!"
                     validation=false;;
             esac
@@ -303,27 +268,7 @@
                     echo "enter y"
                     y=$(getMonth)
                     month=$x-$y;;
-                5) pass=true
-                    array_of_times=()
-                    while $pass
-                    do
-                        echo "enter a value"
-                        value=$(getMonth)
-
-                        if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                            echo "can't duplicate value"
-                        else
-                            array_of_times+=("$value")
-                        fi
-
-                        echo "Enter 'yes' to input another value: (anything else will exit)"
-                        read response
-
-                        if [[ $response != "yes" ]]; then
-                            pass=false
-                        fi
-                    done
-                    month=$( IFS=',';echo "${array_of_times[*]}" );;
+                5) month=$(multiple_selection getMonth);;
                 *) echo "invalid choice. Try Again!"
                     validation=false;;
             esac
@@ -358,27 +303,7 @@
                     echo "enter y"
                     y=$(getDayOfWeek)
                     day_of_week=$x-$y;;
-                5) pass=true
-                    array_of_times=()
-                    while $pass
-                    do
-                        echo "enter a value"
-                        value=$(getDayOfWeek)
-
-                        if [[ "${array_of_times[@]}" =~ "${value}" ]]; then
-                            echo "can't duplicate value"
-                        else
-                            array_of_times+=("$value")
-                        fi
-
-                        echo "Enter 'yes' to input another value: (anything else will exit)"
-                        read response
-
-                        if [[ $response != "yes" ]]; then
-                            pass=false
-                        fi
-                    done
-                    day_of_week=$( IFS=',';echo "${array_of_times[*]}" );;
+                5) day_of_week=$(multiple_selection getDayOfWeek);;
                 *) echo "invalid choice. Try Again!"
                     validation=false;;
             esac 
@@ -394,11 +319,11 @@
         count=1
         echo -e "# \t Min \t Hour \t Day \t Month \t DoW \t Command"
         for i in "${cronjobs_array[@]}"
-            do
-                IFS=' ' read -ra words <<< "$i"
-                echo -e "$count \t ${words[0]} \t ${words[1]} \t ${words[2]} \t ${words[3]} \t ${words[4]} \t ${words[5]} \t ${words[6]} "
-                ((count=count+1))
-            done  
+        do
+            IFS=' ' read -ra words <<< "$i"
+            echo -e "$count \t ${words[0]} \t ${words[1]} \t ${words[2]} \t ${words[3]} \t ${words[4]} \t ${words[5]} \t ${words[6]} "
+            ((count=count+1))
+        done  
     }
 
     function insert_a_job () {
